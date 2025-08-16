@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LifePredictor v4 - Stylish</title>
+<style>
+body { font-family: Arial, sans-serif; background: #f4f4f4; padding: 20px; transition: background 0.3s, color 0.3s; }
+body.dark { background: #121212; color: #eee; }
+h1 { text-align: center; margin-bottom: 10px; }
+form { background: #fff; padding: 20px; margin: auto; max-width: 500px; border-radius: 12px; box-shadow: 0px 4px 15px rgba(0,0,0,0.15); }
+body.dark form { background: #1e1e1e; }
+input, select, button { width: 100%; padding: 12px; margin: 10px 0; border-radius: 6px; border: 1px solid #ccc; box-sizing: border-box; }
+button { background: #007bff; color: white; border: none; cursor: pointer; transition: 0.3s; }
+button:hover { background: #0056b3; }
+.theme-toggle { margin-bottom: 10px; background: #6c757d; }
+.result { margin: 20px auto; max-width: 500px; animation: fadeIn 1s ease; }
+.card { background: #fff; padding: 15px; margin-bottom: 15px; border-radius: 10px; box-shadow: 0px 3px 10px rgba(0,0,0,0.1); transition: transform 0.3s, box-shadow 0.3s; }
+.card:hover { transform: translateY(-5px); box-shadow: 0px 6px 20px rgba(0,0,0,0.2); }
+body.dark .card { background: #1e1e1e; }
+.card p { margin: 6px 0; font-size: 16px; }
+.boy { color: #3498db; font-weight: bold; }
+.girl { color: #e74c3c; font-weight: bold; }
+.download-btn { margin-top: 10px; background: #28a745; }
+@keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
+</style>
+</head>
+<body>
+
+<h1>LifePredictor v4 - Stylish</h1>
+<button class="theme-toggle" onclick="toggleTheme()">Toggle Light/Dark Theme</button>
+
+<form id="predictForm">
+  <input type="text" id="name" placeholder="Enter Your Name" required>
+  <select id="gender" required>
+    <option value="">Select Gender</option>
+    <option value="Male">Male</option>
+    <option value="Female">Female</option>
+  </select>
+  <input type="date" id="dob" placeholder="Enter Your DOB" required>
+  <button type="button" onclick="generate()">Generate</button>
+</form>
+
+<div id="result" class="result" style="display:none;"></div>
+
+<script>
+function randomDate(start,end){ const d=new Date(start.getTime()+Math.random()*(end.getTime()-start.getTime())); return d.toLocaleDateString('en-GB'); }
+function randomChoice(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+function toggleTheme(){ document.body.classList.toggle("dark"); }
+
+function generate(){
+  const name=document.getElementById('name').value.trim();
+  const gender=document.getElementById('gender').value;
+  const dob=document.getElementById('dob').value;
+  const resultDiv=document.getElementById('result');
+  if(!name||!gender||!dob){ alert("Please fill all fields!"); return; }
+
+  let marriageDate, spouseName;
+  const spouseMaleNames=["Arjun","Rohan","Kunal","Vedant","Ayaan","Ishaan"];
+  const spouseFemaleNames=["Ananya","Riya","Meera","Saanvi","Tara","Isha"];
+  if(name.toLowerCase()==="roshan"){ marriageDate="03/12/23"; spouseName="Shweta"; }
+  else if(name.toLowerCase()==="shweta"){ marriageDate="03/12/23"; spouseName="Roshan"; }
+  else{ marriageDate=randomDate(new Date(2025,0,1),new Date(2035,11,31)); spouseName=gender==="Male"?randomChoice(spouseFemaleNames):randomChoice(spouseMaleNames); }
+
+  const boyNames=["Aryan","Vivaan","Krishna","Vedant","Aditya"];
+  const girlNames=["Anaya","Ira","Mira","Tara","Saanvi"];
+  const marriageYear=new Date(marriageDate.split("/").reverse().join("-")).getFullYear();
+
+  // Random number of children: 0–3 normal users, 1 for Shweta/Roshan
+  let childrenCount = (name.toLowerCase()==="roshan"||name.toLowerCase()==="shweta")?1:Math.floor(Math.random()*4);
+
+  let childrenHTML="";
+  for(let i=1;i<=childrenCount;i++){
+    const cGender=randomChoice(["Boy","Girl"]);
+    const cYear=marriageYear+i;
+    const cDOB=randomDate(new Date(cYear,0,1),new Date(cYear,11,31));
+    const cName=cGender==="Boy"?randomChoice(girlNames):randomChoice(boyNames);
+    childrenHTML+=`<div class="card"><p><strong>Child ${i} Gender:</strong> <span class="${cGender==="Boy"?"boy":"girl"}">${cGender}</span></p>`;
+    childrenHTML+=`<p><strong>Child ${i} Name:</strong> ${cName}</p>`;
+    childrenHTML+=`<p><strong>Child ${i} DOB:</strong> ${cDOB}</p></div>`;
+  }
+
+  const luckyNumbers=[3,7,9,11,21,25,33];
+  const luckyColors=["Blue","Red","Green","Purple","Orange","Teal"];
+  const luckyStones=["Sapphire","Emerald","Ruby","Topaz","Amethyst","Diamond"];
+  const luckyNumber=randomChoice(luckyNumbers);
+  const luckyColor=randomChoice(luckyColors);
+  const luckyStone=randomChoice(luckyStones);
+
+  resultDiv.innerHTML=`<div class="card"><p><strong>Marriage Date:</strong> ${marriageDate}</p><p><strong>Spouse Name:</strong> ${spouseName}</p></div>${childrenHTML}<div class="card"><p><strong>Lucky Number:</strong> ${luckyNumber}</p><p><strong>Lucky Color:</strong> ${luckyColor}</p><p><strong>Lucky Stone:</strong> ${luckyStone}</p><button class="download-btn" onclick="downloadResult()">Download Result</button></div>`;
+  resultDiv.style.display="block";
+}
+
+function downloadResult(){
+  const content=document.getElementById('result').innerText;
+  const blob=new Blob([content], {type:"text/plain"});
+  const link=document.createElement("a");
+  link.href=URL.createObjectURL(blob);
+  link.download="LifePredictor_Result.txt";
+  link.click();
+}
+</script>
+
+</body>
+</html>
